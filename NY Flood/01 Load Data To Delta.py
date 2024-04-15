@@ -16,12 +16,13 @@ mos.enable_gdal(spark)
 
 # COMMAND ----------
 
+# DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------
 
+# DBTITLE 1,CHANGE these to your paths
 ROOT_PATH = "/dbfs/FileStore/marcellferencz/flood_risk"
 os.environ["ROOT_PATH"] = ROOT_PATH
 

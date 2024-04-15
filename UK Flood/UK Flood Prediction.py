@@ -13,9 +13,8 @@ mos.enable_gdal(spark)
 
 # COMMAND ----------
 
-# DBTITLE 1,CHANGE THIS - set catalogue (if using UC) and schema
+# DBTITLE 1,CHANGE THIS - set schema
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------
