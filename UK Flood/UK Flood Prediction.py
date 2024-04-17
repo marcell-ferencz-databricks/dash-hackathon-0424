@@ -1,6 +1,7 @@
 # Databricks notebook source
 # DBTITLE 1,Set Indexing System to British National Grid
 spark.conf.set("spark.databricks.labs.mosaic.index.system", "BNG")
+spark.conf.set("spark.databricks.optimizer.adaptive.enabled", "false")
 
 # COMMAND ----------
 
@@ -63,15 +64,15 @@ df_flood_warning = df_flood_warning\
     F.col("grid.index_id").alias("index_id"),
     F.col("grid.wkb").alias("wkb"),
     F.col("qdial")
-  )
+  ).cache()
 
-# df_flood_warning.display()
+df_flood_warning.display()
 
 # COMMAND ----------
 
 # DBTITLE 1,Uncomment to plot with Kepler
-# %%mosaic_kepler
-# df_flood_warning "wkb" "geometry" 10000
+# MAGIC %%mosaic_kepler
+# MAGIC df_flood_warning "wkb" "geometry" 10000
 
 # COMMAND ----------
 

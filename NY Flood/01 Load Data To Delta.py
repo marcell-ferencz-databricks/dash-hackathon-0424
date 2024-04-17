@@ -18,6 +18,7 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
+# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------
@@ -29,7 +30,7 @@ os.environ["ROOT_PATH"] = ROOT_PATH
 ROOT_PATH_SPARK = "dbfs:/FileStore/marcellferencz/flood_risk"
 os.environ["ROOT_PATH_SPARK"] = ROOT_PATH_SPARK
 
-RESOLUTION = 8
+RESOLUTION = 7
 
 # COMMAND ----------
 
@@ -65,13 +66,11 @@ display(dbutils.fs.ls(f"{ROOT_PATH_SPARK}/weather/data"))
 
 # COMMAND ----------
 
-#mos.rst_fromfile("path")
 
 weather_metadata_df = (
   spark.read.format("gdal").option("pathGlobFilter", "*.nc").load(f"{ROOT_PATH_SPARK}/weather/data")
     .drop("content")
       .withColumn("tmp", F.col("subdatasets.precip"))
-      # .withColumn("subdatasets_str", F.from_json("subdatasets"))
       .withColumn("precip_tile", mos.rst_getsubdataset(F.col("tile"), F.lit("precip")))
       .withColumn("num_bands", mos.rst_numbands("tile"))
       .withColumn("metadata2", mos.rst_metadata("tile"))
@@ -82,13 +81,23 @@ weather_metadata_df.display()
 
 # COMMAND ----------
 
+df = spark.read.format("gdal")\
+    .option("driverName", "NetCDF")\
+    .load(f"{ROOT_PATH_SPARK}/weather/data/precip.V1.0.day.ltm.1991-2020.nc")
+
+# COMMAND ----------
+
+df.display()
+
+# COMMAND ----------
+
 weather_df = mos.read()\
   .format("raster_to_grid")\
   .option("resolution", str(RESOLUTION))\
   .option("readSubdataset", "true")\
   .option("subdatasetName", "precip")\
   .option("combiner", "mean")\
-  .load(f"{ROOT_PATH_SPARK}/weather/data")
+  .load(f"{ROOT_PATH_SPARK}/weather/data/")
 
 weather_df.display()
 
@@ -155,46 +164,19 @@ mupolygon_df = mos.read()\
   .format("multi_read_ogr")\
   .option("vsizip", "true")\
   .option("layerName", "mupolygon")\
-  .load(f"{ROOT_PATH_SPARK}/soil/")\
-  .repartition(200, F.col("Shape"))\
-  .withColumn("geom", mos.st_updatesrid("Shape", "Shape_srid", F.lit(4326)))
+  .load(f"{ROOT_PATH_SPARK}/soil/")
 
-mupolygon_df.display()
+# COMMAND ----------
+
+mupolygon_df = mos.read()\
+  .format("multi_read_ogr")\
+  .option("vsizip", "true")\
+  .option("layerName", "mupolygon")\
+  .load(f"{ROOT_PATH_SPARK}/soil/")
 
 # COMMAND ----------
 
 mupolygon_df.write.format("delta").mode("overwrite").saveAsTable("mupolygon")
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## SApolygon
-
-# COMMAND ----------
-
-sapolygon_df = mos.read()\
-  .format("multi_read_ogr")\
-  .option("vsizip", "true")\
-  .option("layerName", "sapolygon")\
-  .load(f"{ROOT_PATH_SPARK}/soil/")\
-  .repartition(200, F.col("Shape"))\
-  .withColumn("geom", mos.st_updatesrid("Shape", "Shape_srid", F.lit(4326)))#\
-  # .select(mos.grid_tessellateexplode("geom", F.lit(RESOLUTION)).alias("grid"))\
-  # .select(
-  #   F.col("grid.is_core").alias("is_core")
-  # )\
-  # .repartition(200)
-
-
-# .select(F.col("grid.index_id").alias("cell_id"))\
-
-# COMMAND ----------
-
-sapolygon_df.limit(10).display()
-
-# COMMAND ----------
-
-sapolygon_df.write.format("delta").mode("overwrite").saveAsTable("sapolygon")
 
 # COMMAND ----------
 

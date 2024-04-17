@@ -34,8 +34,18 @@ os.environ["TEMP_PATH"] = TEMP_PATH
 # COMMAND ----------
 
 # MAGIC %sh
-# MAGIC mkdir -p $ROOT_PATH/soil/data
-# MAGIC wget -O $ROOT_PATH/soil/soil.zip https://dashhackdata.blob.core.windows.net/sampledata/geospatial/ny_soil/gSSURGO_NY.gdb.zip?sp=r&st=2024-04-09T09:49:42Z&se=2024-05-03T17:49:42Z&spr=https&sv=2022-11-02&sr=b&sig=WVoKf2DTj1z287nrpMy3qeHPiNLjHovU0VaATDLZ768%3D
+# MAGIC mkdir -p $ROOT_PATH/soil_/data
+# MAGIC wget -O $ROOT_PATH/soil_/soil.zip https://dashhackdata.blob.core.windows.net/sampledata/geospatial/ny_soil/gSSURGO_NY.gdb.zip?sp=r&st=2024-04-09T09:49:42Z&se=2024-05-03T17:49:42Z&spr=https&sv=2022-11-02&sr=b&sig=WVoKf2DTj1z287nrpMy3qeHPiNLjHovU0VaATDLZ768%3D
+
+# COMMAND ----------
+
+# MAGIC %sh
+# MAGIC mkdir -p $ROOT_PATH/soil_/data
+# MAGIC wget -O $ROOT_PATH/soil_/soil.gdb.zip https://dashhackdata.blob.core.windows.net/sampledata/geospatial/ny_soil/gSSURGO_NY.gdb.zip?sp=r&st=2024-04-14T08:56:27Z&se=2024-05-03T16:56:27Z&spr=https&sv=2022-11-02&sr=b&sig=eyRDXkjS5dvLb61AFkCMbxjzBho36afl90XAiSafqgI%3D
+
+# COMMAND ----------
+
+
 
 # COMMAND ----------
 
