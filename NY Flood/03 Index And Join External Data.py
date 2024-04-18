@@ -93,19 +93,10 @@ df_nhda = df_nhda\
 
 # COMMAND ----------
 
-# MAGIC %%mosaic_kepler
-# MAGIC df_nhda "wkb" "geometry" 100
-
-# COMMAND ----------
-
 df_nhda_grouped = df_nhda.groupBy("cell_id").agg(
   F.mean("visibility").alias("visibility"),
   F.mean("elevation").alias("elevation")
 )
-
-# COMMAND ----------
-
-df_nhda_grouped.display()
 
 # COMMAND ----------
 
@@ -114,10 +105,6 @@ features_df = features_df.join(
   on="cell_id",
   how="left"
 ).cache()
-
-# COMMAND ----------
-
-features_df.write.format("delta").mode("overwrite").saveAsTable(f"features_{sample}")
 
 # COMMAND ----------
 
