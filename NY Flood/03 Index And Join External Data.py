@@ -9,6 +9,7 @@ dbutils.widgets.dropdown("Sample_Type", "sample_small", ["sample_small", "sample
 # COMMAND ----------
 
 spark.conf.set("spark.databricks.optimizer.adaptive.enabled", "false")
+spark.conf.set("spark.sql.adaptive.enabled", "false")
 
 # COMMAND ----------
 
@@ -22,7 +23,6 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------
@@ -75,31 +75,49 @@ features_df.display()
 
 # COMMAND ----------
 
-nhda_area_df = spark.read.table("hydorgraphy_area")\
-  .withColumn("grid", mos.grid_tessellateexplode(mos.st_asbinary(mos.st_buffer(mos.st_geomfromwkt("geom_0"), F.lit(0))), F.lit(RESOLUTION)))\
-  .drop("geom_0")\
-  .withColumn("geom", F.col("grid.wkb"))\
-  .where(mos.st_isvalid("geom"))\
-  .withColumn("cell_id", F.col("grid.index_id"))
+df_nhda = spark.read.table("hydorgraphy_area")\
+  .where(mos.st_numpoints("geom_0")<5000)
+  
 
 # COMMAND ----------
 
-nhda_area_df = nhda_area_df.groupBy("cell_id").agg(
+df_nhda = df_nhda\
+  .repartition(8)\
+  .withColumn("grid",
+              mos.grid_tessellateexplode(
+                  mos.st_buffer("geom_0", F.lit(0)), F.lit(RESOLUTION))
+              )\
+  .withColumn("cell_id", F.col("grid.index_id"))\
+  .withColumn("wkb", F.col("grid.wkb"))
+  
+
+# COMMAND ----------
+
+# MAGIC %%mosaic_kepler
+# MAGIC df_nhda "wkb" "geometry" 100
+
+# COMMAND ----------
+
+df_nhda_grouped = df_nhda.groupBy("cell_id").agg(
   F.mean("visibility").alias("visibility"),
   F.mean("elevation").alias("elevation")
 )
 
 # COMMAND ----------
 
-features_df = features_df.join(
-  nhda_area_df,
-  on="cell_id",
-  how="left"
-)
+df_nhda_grouped.display()
 
 # COMMAND ----------
 
-features_df.display()
+features_df = features_df.join(
+  df_nhda_grouped,
+  on="cell_id",
+  how="left"
+).cache()
+
+# COMMAND ----------
+
+features_df.write.format("delta").mode("overwrite").saveAsTable(f"features_{sample}")
 
 # COMMAND ----------
 
@@ -108,20 +126,27 @@ features_df.display()
 
 # COMMAND ----------
 
-roads_df = spark.read.table("roads")
+roads_df = spark.read.table("roads")\
+  .withColumn("grid", mos.grid_tessellateexplode("geom_0", F.lit(RESOLUTION)))\
+  .drop("geom_0")\
+  .withColumn("geom", F.col("grid.wkb"))\
+  .where(mos.st_isvalid("geom"))\
+  .withColumn("cell_id", F.col("grid.index_id"))
 
-# ...
-
-
-# COMMAND ----------
-
-# roads_df = roads_df\
-#   .withColumn("road_length", mos.st_length("geom"))
 
 # COMMAND ----------
 
-features_df.display()
+roads_df = roads_df\
+  .withColumn("road_length", mos.st_length("geom"))
 
 # COMMAND ----------
 
-features_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable("features")
+features_df = features_df.join(
+  roads_df.select("cell_id", "road_length"),
+  on="cell_id",
+  how="left"
+)
+
+# COMMAND ----------
+
+features_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"features_{sample}")

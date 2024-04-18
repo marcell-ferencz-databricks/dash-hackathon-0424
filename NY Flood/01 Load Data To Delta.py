@@ -18,7 +18,6 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------

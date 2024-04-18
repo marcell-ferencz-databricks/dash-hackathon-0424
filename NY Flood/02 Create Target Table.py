@@ -6,7 +6,6 @@ dbutils.widgets.dropdown("Sample_Type", "sample_small", ["sample_small", "sample
 spark.conf.set("spark.databricks.optimizer.adaptive.enabled", "false")
 spark.conf.set('spark.worker.timeout', '600s')
 
-
 # COMMAND ----------
 
 import mosaic as mos
@@ -20,7 +19,6 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
 # MAGIC USE geospatial;
 
 # COMMAND ----------
