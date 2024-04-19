@@ -18,15 +18,15 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE geospatial;
+# MAGIC USE dash_hackathon;
 
 # COMMAND ----------
 
 # DBTITLE 1,CHANGE these to your paths
-ROOT_PATH = "/dbfs/FileStore/marcellferencz/flood_risk"
+ROOT_PATH = "/dbfs/FileStore/tom.kirkpatrick@defra.gov.uk/flood_risk"
 os.environ["ROOT_PATH"] = ROOT_PATH
 
-ROOT_PATH_SPARK = "dbfs:/FileStore/marcellferencz/flood_risk"
+ROOT_PATH_SPARK = "dbfs:/FileStore/tom.kirkpatrick@defra.gov.uk/flood_risk"
 os.environ["ROOT_PATH_SPARK"] = ROOT_PATH_SPARK
 
 RESOLUTION = 7

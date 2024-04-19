@@ -9,10 +9,10 @@ import pyspark.sql.functions as F
 
 # COMMAND ----------
 
-ROOT_PATH = "/dbfs/FileStore/marcellferencz/flood_risk"
+ROOT_PATH = "/dbfs/FileStore/tom.kirkpatrick@defra.gov.uk/flood_risk"
 os.environ["ROOT_PATH"] = ROOT_PATH
 
-ROOT_PATH_SPARK = "dbfs:/FileStore/marcellferencz/flood_risk"
+ROOT_PATH_SPARK = "dbfs:/FileStore/tom.kirkpatrick@defra.gov.uk/flood_risk"
 os.environ["ROOT_PATH_SPARK"] = ROOT_PATH_SPARK
 
 TEMP_PATH = "/databricks/driver/temp_geospatial"
@@ -45,11 +45,7 @@ os.environ["TEMP_PATH"] = TEMP_PATH
 
 # COMMAND ----------
 
-
-
-# COMMAND ----------
-
-# MAGIC %sh unzip $ROOT_PATH/soil/soil.zip -d $ROOT_PATH/soil/data
+# MAGIC %sh unzip $ROOT_PATH/soil_/soil.gdb.zip -d $ROOT_PATH/soil/data
 
 # COMMAND ----------
 

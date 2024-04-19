@@ -23,7 +23,7 @@ mos.enable_gdal(spark)
 
 # DBTITLE 1,CHANGE THIS to your schema
 # MAGIC %sql
-# MAGIC USE geospatial;
+# MAGIC USE dash_hackathon;
 
 # COMMAND ----------
 

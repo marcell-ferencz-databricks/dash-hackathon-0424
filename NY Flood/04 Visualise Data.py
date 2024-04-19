@@ -21,8 +21,7 @@ mos.enable_gdal(spark)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC USE CATALOG marcell;
-# MAGIC USE SCHEMA geospatial;
+# MAGIC USE dash_hackathon;
 
 # COMMAND ----------
 
